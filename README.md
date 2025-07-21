@@ -1,160 +1,94 @@
-# 𝑃𝑜𝑟𝑡𝑒𝑟𝑊𝑎𝑎𝑙𝑒 Application
+# Porter Delivery Platform
 
-A comprehensive delivery management system with real-time tracking and multi-role support.
+A full-stack delivery management platform for booking, tracking, and managing deliveries, with real-time updates and role-based dashboards for users, porters, and admins.
 
-## Features
+---
 
-- **Multi-role Authentication**
-  - Admin: Manage users, porters, and system settings
-  - Users: Place delivery requests and track shipments
-  - Porter: Accept deliveries and manage deliveries in progress
+## 🚀 Features
+- User registration, login, and OTP authentication
+- Book and track deliveries in real-time
+- Porter dashboard for managing assigned tasks
+- Admin dashboard for managing users and deliveries
+- Payment integration (Razorpay)
+- Email notifications
+- WebSocket-based real-time updates
+- Role-based access control
 
-- **Real-time Tracking**
-  - Live location tracking using Google Maps API
-  - Shortest path calculation
-  - Estimated time of arrival
+---
 
-- **Payment System**
-  - Distance-based pricing
-  - Secure payment processing
-  - Transaction history
+## 🛠️ Tech Stack
+- **Backend:** Java, Spring Boot, Spring Security, JPA/Hibernate
+- **Frontend:** React (Vite), JavaScript, CSS
+- **Database:** (Configure in `application.properties`)
+- **Payments:** Razorpay
+- **WebSockets:** Spring WebSocket, custom service
 
-- **Responsive Design**
-  - Works on desktop and mobile devices
-  - Progressive Web App (PWA) support
+---
 
-## Tech Stack
-
-### Frontend
-- React.js
-- TypeScript
-- Material-UI
-- Redux Toolkit
-- React Router
-- Google Maps JavaScript API
-- Socket.io-client
-
-### Backend
-- Spring Boot
-- Spring Security
-- SQL Server
-- WebSocket
-- JWT Authentication
-- Google Maps Services API
-
-## Prerequisites
-
-- Node.js (v18 or higher)
-- Java 17 or higher
-- SQL Server Express or higher
-- Google Maps API Key
-- Maven
-
-## Setup Instructions
-
-1. Clone the repository
-2. Set up environment variables
-3. Install dependencies
-4. Set up SQL Server database
-5. Run the application
-
-### Database Setup
-```sql
--- Create Database
-CREATE DATABASE db_porter;
-GO
-
-USE db_porter;
-GO
-
--- Create Users table
-CREATE TABLE users (
-    id BIGINT IDENTITY(1,1) PRIMARY KEY,
-    username NVARCHAR(50) UNIQUE NOT NULL,
-    password NVARCHAR(255) NOT NULL,
-    email NVARCHAR(100) UNIQUE NOT NULL,
-    role NVARCHAR(20) NOT NULL CHECK (role IN ('ADMIN', 'USER', 'PORTER')),
-    created_at DATETIME2 DEFAULT GETDATE(),
-    updated_at DATETIME2 DEFAULT GETDATE()
-);
-
--- Create Deliveries table
-CREATE TABLE deliveries (
-    id BIGINT IDENTITY(1,1) PRIMARY KEY,
-    user_id BIGINT,
-    porter_id BIGINT,
-    pickup_location NVARCHAR(255) NOT NULL,
-    pickup_latitude DECIMAL(10, 8) NOT NULL,
-    pickup_longitude DECIMAL(11, 8) NOT NULL,
-    delivery_location NVARCHAR(255) NOT NULL,
-    delivery_latitude DECIMAL(10, 8) NOT NULL,
-    delivery_longitude DECIMAL(11, 8) NOT NULL,
-    status NVARCHAR(20) NOT NULL CHECK (status IN ('PENDING', 'ACCEPTED', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED')),
-    distance DECIMAL(10, 2),
-    amount DECIMAL(10, 2),
-    created_at DATETIME2 DEFAULT GETDATE(),
-    updated_at DATETIME2 DEFAULT GETDATE(),
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (porter_id) REFERENCES users(id)
-);
-
--- Create Tracking table
-CREATE TABLE tracking (
-    id BIGINT IDENTITY(1,1) PRIMARY KEY,
-    delivery_id BIGINT,
-    latitude DECIMAL(10, 8) NOT NULL,
-    longitude DECIMAL(11, 8) NOT NULL,
-    timestamp DATETIME2 DEFAULT GETDATE(),
-    FOREIGN KEY (delivery_id) REFERENCES deliveries(id)
-);
-
--- Create Payments table
-CREATE TABLE payments (
-    id BIGINT IDENTITY(1,1) PRIMARY KEY,
-    delivery_id BIGINT,
-    amount DECIMAL(10, 2) NOT NULL,
-    status NVARCHAR(20) NOT NULL CHECK (status IN ('PENDING', 'COMPLETED', 'FAILED')),
-    payment_method NVARCHAR(50),
-    transaction_id NVARCHAR(100),
-    created_at DATETIME2 DEFAULT GETDATE(),
-    FOREIGN KEY (delivery_id) REFERENCES deliveries(id)
-);
+## 📁 Folder Structure
+```
+Porter/
+├── porter-delivery-frontend/   # React frontend (Vite)
+│   └── src/
+│       ├── components/         # Reusable UI components
+│       ├── contexts/           # React context providers
+│       ├── pages/              # Page-level components
+│       ├── services/           # API and WebSocket services
+│       └── ...
+├── src/main/java/com/porter/   # Spring Boot backend
+│   ├── config/                 # Configuration classes
+│   ├── controller/             # REST controllers
+│   ├── DTO/                    # Data Transfer Objects
+│   ├── Email/                  # Email service
+│   ├── exception/              # Exception handling
+│   ├── model/                  # JPA entities
+│   ├── repository/             # Spring Data repositories
+│   ├── security/               # Security config & JWT
+│   ├── service/                # Service interfaces & impl
+│   └── ...
+└── src/main/resources/         # Application properties, static files
 ```
 
-### Frontend Setup
-```bash
-cd porter-delivery-frontend
-npm install
-npm start
-```
+---
 
-### Backend Setup
-```bash
-./mvnw spring-boot:run
-```
+## ⚙️ Setup Instructions
 
-## Environment Variables
+### 1. Backend (Spring Boot)
+1. **Configure Database:**
+   - Edit `src/main/resources/application.properties` with your DB credentials.
+2. **Build & Run:**
+   - Using Maven:
+     ```sh
+     ./mvnw spring-boot:run
+     ```
+   - Or import into your IDE and run `PorterApplication.java`.
 
-Create a `.env` file in the frontend directory with:
+### 2. Frontend (React)
+1. **Install dependencies:**
+   ```sh
+   cd porter-delivery-frontend
+   npm install
+   ```
+2. **Run the app:**
+   ```sh
+   npm run dev
+   ```
+3. **Configure API endpoints:**
+   - Update API URLs in `porter-delivery-frontend/src/services/` as needed.
 
-```
-REACT_APP_GOOGLE_MAPS_API_KEY=your_api_key
-REACT_APP_API_URL=http://localhost:8080
-```
+---
 
-The backend configuration is already set in `application.properties` with SQL Server connection details:
+## 🧑‍💻 Usage
+- Access the frontend at [http://localhost:5173](http://localhost:5173) (default Vite port)
+- Backend runs at [http://localhost:8080](http://localhost:8080) (default Spring Boot port)
+- Register as a user, book deliveries, or log in as porter/admin for respective dashboards.
 
-```properties
-spring.datasource.url=jdbc:sqlserver://DESKTOP-PS5HGFA\\SQLEXPRESS;databaseName=db_porter;encrypt=true;trustServerCertificate=true
-spring.datasource.username=sa
-spring.datasource.password=dims123
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.SQLServerDialect
-```
+---
 
-## API Documentation
+## 📬 Contact
+- **Author:** [Mahesh Jaiswal](mailto:maheshjaiswal271@gmail.com)
+- **Project Link:** [GitHub Repository](https://github.com/maheshjaiswal271/Porter-Delivery-App))
 
-API documentation is available at `/swagger-ui.html` when running the backend server.
+---
 
-## License
-
-MIT 
+*Feel free to update this README with more details as your project evolves!*
