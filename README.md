@@ -78,10 +78,80 @@ Porter/
 
 ---
 
+## 🗄️ SQL Server: Create Tables
+
+Below are example SQL Server queries to create the main tables required for the backend. Adjust field types and constraints as needed for your environment.
+
+```sql
+-- Users table
+CREATE TABLE users (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    username NVARCHAR(50) UNIQUE NOT NULL,
+    password NVARCHAR(255) NOT NULL,
+    email NVARCHAR(100) UNIQUE NOT NULL,
+    role NVARCHAR(20) NOT NULL CHECK (role IN ('ADMIN', 'USER', 'PORTER')),
+    created_at DATETIME2 DEFAULT GETDATE(),
+    updated_at DATETIME2 DEFAULT GETDATE()
+);
+
+-- Deliveries table
+CREATE TABLE deliveries (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    user_id BIGINT,
+    porter_id BIGINT,
+    pickup_location NVARCHAR(255) NOT NULL,
+    pickup_latitude DECIMAL(10, 8) NOT NULL,
+    pickup_longitude DECIMAL(11, 8) NOT NULL,
+    delivery_location NVARCHAR(255) NOT NULL,
+    delivery_latitude DECIMAL(10, 8) NOT NULL,
+    delivery_longitude DECIMAL(11, 8) NOT NULL,
+    status NVARCHAR(20) NOT NULL CHECK (status IN ('PENDING', 'ACCEPTED', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED')),
+    distance DECIMAL(10, 2),
+    amount DECIMAL(10, 2),
+    created_at DATETIME2 DEFAULT GETDATE(),
+    updated_at DATETIME2 DEFAULT GETDATE(),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (porter_id) REFERENCES users(id)
+);
+
+-- Tracking table
+CREATE TABLE tracking (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    delivery_id BIGINT,
+    latitude DECIMAL(10, 8) NOT NULL,
+    longitude DECIMAL(11, 8) NOT NULL,
+    timestamp DATETIME2 DEFAULT GETDATE(),
+    FOREIGN KEY (delivery_id) REFERENCES deliveries(id)
+);
+
+-- Payments table
+CREATE TABLE payments (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    delivery_id BIGINT,
+    amount DECIMAL(10, 2) NOT NULL,
+    status NVARCHAR(20) NOT NULL CHECK (status IN ('PENDING', 'COMPLETED', 'FAILED')),
+    payment_method NVARCHAR(50),
+    transaction_id NVARCHAR(100),
+    created_at DATETIME2 DEFAULT GETDATE(),
+    FOREIGN KEY (delivery_id) REFERENCES deliveries(id)
+);
+```
+
+---
+
 ## 🧑‍💻 Usage
 - Access the frontend at [http://localhost:5173](http://localhost:5173) (default Vite port)
 - Backend runs at [http://localhost:8080](http://localhost:8080) (default Spring Boot port)
 - Register as a user, book deliveries, or log in as porter/admin for respective dashboards.
+
+---
+
+## 🤝 Contributing
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/YourFeature`)
+3. Commit your changes (`git commit -am 'Add new feature'`)
+4. Push to the branch (`git push origin feature/YourFeature`)
+5. Open a Pull Request
 
 ---
 
@@ -91,4 +161,4 @@ Porter/
 
 ---
 
-*Feel free to update this README with more details as your project evolves!*
+*Feel free to update this README with more details as your project evolves!* 
