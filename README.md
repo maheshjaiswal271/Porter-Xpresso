@@ -19,7 +19,11 @@ A full-stack delivery management platform for booking, tracking, and managing de
 ## 🛠️ Tech Stack
 - **Backend:** Java, Spring Boot, Spring Security, JPA/Hibernate
 - **Frontend:** React (Vite), JavaScript, CSS
+<<<<<<< HEAD
 - **Database:** SQL Server (Configure via environment variables)
+=======
+- **Database:** (Configure in `application.properties`)
+>>>>>>> 44ab1387d3706530843c39622451e327c01e3b00
 - **Payments:** Razorpay
 - **WebSockets:** Spring WebSocket, custom service
 
@@ -51,6 +55,7 @@ Porter/
 
 ---
 
+<<<<<<< HEAD
 ## ⚙️ Environment Variables Setup
 
 The application uses environment variables for configuration. Create a `.env` file in the `src/` directory:
@@ -123,6 +128,35 @@ For deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md)
 
 ---
 
+=======
+## ⚙️ Setup Instructions
+
+### 1. Backend (Spring Boot)
+1. **Configure Database:**
+   - Edit `src/main/resources/application.properties` with your DB credentials.
+2. **Build & Run:**
+   - Using Maven:
+     ```sh
+     ./mvnw spring-boot:run
+     ```
+   - Or import into your IDE and run `PorterApplication.java`.
+
+### 2. Frontend (React)
+1. **Install dependencies:**
+   ```sh
+   cd porter-delivery-frontend
+   npm install
+   ```
+2. **Run the app:**
+   ```sh
+   npm run dev
+   ```
+3. **Configure API endpoints:**
+   - Update API URLs in `porter-delivery-frontend/src/services/` as needed.
+
+---
+
+>>>>>>> 44ab1387d3706530843c39622451e327c01e3b00
 ## 🗄️ SQL Server: Create Tables
 
 Below are example SQL Server queries to create the main tables required for the backend. Adjust field types and constraints as needed for your environment.
@@ -200,6 +234,7 @@ CREATE TABLE payments (
 
 ---
 
+<<<<<<< HEAD
 ## 📄 License
 [MIT](LICENSE) *(or specify your license here)*
 
@@ -212,3 +247,12 @@ CREATE TABLE payments (
 ---
 
 *Feel free to update this README with more details as your project evolves!* 
+=======
+## 📬 Contact
+- **Author:** [Mahesh Jaiswal](mailto:maheshjaiswal271@gmail.com)
+- **Project Link:** [GitHub Repository](https://github.com/maheshjaiswal271/Porter-Delivery-App))
+
+---
+
+*Feel free to update this README with more details as your project evolves!* 
+>>>>>>> 44ab1387d3706530843c39622451e327c01e3b00
