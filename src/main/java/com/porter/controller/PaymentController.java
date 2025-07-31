@@ -12,15 +12,21 @@ import org.springframework.web.bind.annotation.RestController;
 import com.porter.DTO.PaymentResponse;
 import com.porter.DTO.RazorpayOrderRequest;
 import com.porter.DTO.RazorpayOrderResponse;
+import com.porter.Email.EmailService;
+import com.porter.model.Delivery;
+import com.porter.model.Payment;
 import com.porter.service.PaymentService;
 
 @RestController
 @RequestMapping("/api/payments")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "${FRONTEND_URL}")
 public class PaymentController {
 
     @Autowired
     private PaymentService paymentService;
+
+    @Autowired
+    private EmailService emailService;
 
     @PostMapping("/create-order")
     public ResponseEntity<RazorpayOrderResponse> createOrder(@RequestBody RazorpayOrderRequest request) {
@@ -35,6 +41,19 @@ public class PaymentController {
             @RequestHeader("X-Razorpay-Signature") String razorpaySignature) {
         PaymentResponse response = paymentService.verifyAndUpdatePayment(
             razorpayPaymentId, razorpayOrderId, razorpaySignature);
+        if (response != null && response.isSuccess()) {
+            Payment payment = paymentService.findByPaymentId(razorpayOrderId);
+            if (payment != null) {
+                Delivery delivery = payment.getDelivery();
+                if (delivery != null && delivery.getUser() != null) {
+                    emailService.sendInvoiceEmail(
+                        delivery,
+                        payment.getAmount() != null ? payment.getAmount().toString() : "",
+                        payment.getPaymentMethod()
+                    );
+                }
+            }
+        }
         return ResponseEntity.ok(response);
     }
 } 

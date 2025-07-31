@@ -1,59 +1,67 @@
-{
-  "properties": [
-    {
-      "name": "jwt.secret",
-      "type": "java.lang.String",
-      "description": "A description for 'jwt.secret'"
-    },
-    {
-      "name": "google.maps.api.key",
-      "type": "java.lang.String",
-      "description": "A description for 'google.maps.api.key'"
-    },
-    {
-      "name": "jwt.expiration",
-      "type": "java.lang.String",
-      "description": "A description for 'jwt.expiration'"
-    },
-    {
-      "name": "spring.web.cors.allowed-origins",
-      "type": "java.lang.String",
-      "description": "A description for 'spring.web.cors.allowed-origins'"
-    },
-    {
-      "name": "spring.web.cors.allowed-methods",
-      "type": "java.lang.String",
-      "description": "A description for 'spring.web.cors.allowed-methods'"
-    },
-    {
-      "name": "spring.web.cors.allowed-headers",
-      "type": "java.lang.String",
-      "description": "A description for 'spring.web.cors.allowed-headers'"
-    },
-    {
-      "name": "spring.web.cors.allow-credentials",
-      "type": "java.lang.String",
-      "description": "A description for 'spring.web.cors.allow-credentials'"
-    },
-    {
-      "name": "razorpay.company.name",
-      "type": "java.lang.String",
-      "description": "A description for 'razorpay.company.name'"
-    },
-    {
-      "name": "razorpay.currency",
-      "type": "java.lang.String",
-      "description": "A description for 'razorpay.currency'"
-    },
-    {
-      "name": "razorpay.key.id",
-      "type": "java.lang.String",
-      "description": "A description for 'razorpay.key.id'"
-    },
-    {
-      "name": "razorpay.key.secret",
-      "type": "java.lang.String",
-      "description": "A description for 'razorpay.key.secret'"
-    }
-  ]
-}
+{"properties": [
+  {
+    "name": "jwt.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'jwt.secret'"
+  },
+  {
+    "name": "google.maps.api.key",
+    "type": "java.lang.String",
+    "description": "A description for 'google.maps.api.key'"
+  },
+  {
+    "name": "jwt.expiration",
+    "type": "java.lang.String",
+    "description": "A description for 'jwt.expiration'"
+  },
+  {
+    "name": "spring.web.cors.allowed-origins",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.web.cors.allowed-origins'"
+  },
+  {
+    "name": "spring.web.cors.allowed-methods",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.web.cors.allowed-methods'"
+  },
+  {
+    "name": "spring.web.cors.allowed-headers",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.web.cors.allowed-headers'"
+  },
+  {
+    "name": "spring.web.cors.allow-credentials",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.web.cors.allow-credentials'"
+  },
+  {
+    "name": "razorpay.company.name",
+    "type": "java.lang.String",
+    "description": "A description for 'razorpay.company.name'"
+  },
+  {
+    "name": "razorpay.currency",
+    "type": "java.lang.String",
+    "description": "A description for 'razorpay.currency'"
+  },
+  {
+    "name": "razorpay.key.id",
+    "type": "java.lang.String",
+    "description": "A description for 'razorpay.key.id'"
+  },
+  {
+    "name": "razorpay.key.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'razorpay.key.secret'"
+  },
+  {
+    "name": "SERVER_PORT",
+    "type": "java.lang.String",
+    "description": "A description for 'SERVER_PORT'"
+  },
+  {
+    "name": "frontend.url",
+    "type": "java.lang.String",
+    "description": "A description for 'frontend.url'"
+  }
+]}

@@ -13,6 +13,7 @@ import com.porter.model.User;
 import com.porter.model.enums.UserRole;
 import com.porter.repository.UserRepository;
 import com.porter.service.UserService;
+import com.porter.service.WebSocketService;
 
 @Service
 @Transactional
@@ -25,10 +26,15 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private WebSocketService webSocketService;
+
     @Override
     public User createUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        webSocketService.sendUserUpdate(savedUser);
+        return savedUser;
     }
 
     @Override
@@ -36,7 +42,9 @@ public class UserServiceImpl implements UserService {
         if (user.getPassword() != null && !user.getPassword().startsWith("$2a$")) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        webSocketService.sendUserUpdate(savedUser);
+        return savedUser;
     }
 
     @Override
@@ -72,5 +80,31 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    @Override
+    public boolean blockUser(Long id) {
+        Optional<User> userOpt = userRepository.findById(id);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            user.setBlocked(true);
+            userRepository.save(user);
+            webSocketService.sendUserUpdate(user);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean unblockUser(Long id) {
+        Optional<User> userOpt = userRepository.findById(id);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            user.setBlocked(false);
+            userRepository.save(user);
+            webSocketService.sendUserUpdate(user);
+            return true;
+        }
+        return false;
     }
 } 

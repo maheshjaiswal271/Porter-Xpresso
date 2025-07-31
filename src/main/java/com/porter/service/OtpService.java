@@ -74,6 +74,7 @@ public class OtpService {
             logger.error("Failed to send OTP email to {}: {}", email, e.getMessage());
             throw new RuntimeException("Failed to send OTP email", e);
         }
+        
     }
 
     public boolean verifyOtp(String username, String otp) {

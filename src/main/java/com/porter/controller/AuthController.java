@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -43,11 +44,14 @@ import com.porter.service.UserService;
 
 import jakarta.validation.Valid;
 
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "${FRONTEND_URL}")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+
+    @Value("${FRONTEND_URL}")
+    private String frontendUrl;
 
     @Autowired
     private UserRepository userRepository;
@@ -108,8 +112,22 @@ public class AuthController {
                 porterRepository.save(porter);
             }
 
-            // Send OTP to email for verification
-            otpService.generateAndSendOtp(user.getUsername(), user.getEmail());
+            // Send welcome/registration email
+            String subject = "Welcome to PORTER▸XPRESSO!";
+            String content = String.format(
+                "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; background-color: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);'>"
+                + "<div style='text-align: center;'>"
+                + "<img src='https://img.icons8.com/emoji/48/delivery-truck.png' alt='Welcome' width='50' height='50' />"
+                + "<h2 style='color: #007bff; margin-bottom: 10px;'>Welcome to PORTER▸XPRESSO!</h2>"
+                + "</div>"
+                + "<p style='font-size: 16px; color: #333;'>Dear <strong>%s</strong>,</p>"
+                + "<p style='font-size: 15px; color: #555;'>Thank you for registering as a %s on PORTER▸XPRESSO. Please verify your email using the OTP sent to your inbox to activate your account.</p>"
+                + "<p style='font-size: 14px; color: #666;'>If you have any questions, feel free to contact our support team.</p>"
+                + "<p style='font-size: 14px; color: #333; margin-top: 30px;'>Best regards,<br><strong>PORTER▸XPRESSO Team</strong></p>"
+                + "</div>",
+                user.getUsername(), user.getRole().name().toLowerCase()
+            );
+            emailService.sendEmail(user.getEmail(), subject, content);
 
             UserDTO userDTO = new UserDTO(user);
             Map<String, Object> response = new HashMap<>();
@@ -130,6 +148,15 @@ public class AuthController {
             // Find user by username
             User user = userService.findByUsername(loginRequest.getUsername())
                     .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+
+
+            if(user.isBlocked()){
+                return ResponseEntity.ok(AuthResponse.builder()
+                        .success(false)
+                        .message("User is Blocked By Admin!")
+                        .requiresOtp(false)
+                        .build());
+            }
 
             // Verify password
             if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
@@ -358,7 +385,7 @@ public class AuthController {
         user.setResetTokenExpiry(LocalDateTime.now().plusMinutes(5));
         user.setResetTokenUsed(false);
         userRepository.save(user);
-        String resetLink = "http://localhost:3000/reset-password?token=" + token;
+        String resetLink = frontendUrl + "/reset-password?token=" + token;
         String subject = "Reset Your Password";
         String content = String.format(
                 """

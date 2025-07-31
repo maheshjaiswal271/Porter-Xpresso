@@ -12,6 +12,7 @@ public class UserDTO {
     private UserRole role;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private boolean blocked;
 
       public UserDTO(User user) {
         this.id = user.getId();
@@ -20,16 +21,18 @@ public class UserDTO {
         this.role = user.getRole();
         this.createdAt = user.getCreatedAt();
         this.updatedAt = user.getUpdatedAt();
+        this.blocked = user.isBlocked();
     }
 
     public UserDTO(Long id, String username, String email, UserRole role,
-                   LocalDateTime createdAt, LocalDateTime updatedAt) {
+                   LocalDateTime createdAt, LocalDateTime updatedAt, boolean blocked) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.role = role;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.blocked = blocked;
     }
 
     // Getters and Setters
@@ -81,6 +84,13 @@ public class UserDTO {
         this.updatedAt = updatedAt;
     }
 
+    public boolean isBlocked() {
+        return blocked;
+    }
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
+    }
+
     @Override
     public String toString() {
         return "UserDTO{" +
@@ -103,7 +113,8 @@ public class UserDTO {
             user.getEmail(),
             user.getRole(),
             user.getCreatedAt(),
-            user.getUpdatedAt()
+            user.getUpdatedAt(),
+            user.isBlocked()
         );
     }
 }

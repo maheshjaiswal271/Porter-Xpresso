@@ -18,7 +18,7 @@ import com.porter.model.Porter;
 import com.porter.repository.PorterRepository;
 import com.porter.service.PorterService;
 
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "${FRONTEND_URL}")
 @RestController
 @RequestMapping("/api/porter")
 @PreAuthorize("hasRole('PORTER')")

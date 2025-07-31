@@ -13,4 +13,5 @@ public interface PorterService {
     List<DeliveryDTO> getActiveDeliveries(String porterUsername);
     List<DeliveryDTO> getDeliveryHistory(String porterUsername);
     Map<String, Object> getPorterStats(String porterUsername);
+    void ratePorter(Long porterId, double rating);
 } 

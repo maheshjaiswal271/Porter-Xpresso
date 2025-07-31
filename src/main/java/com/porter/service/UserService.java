@@ -24,4 +24,7 @@ public interface UserService {
     boolean existsByUsername(String username);
     
     boolean existsByEmail(String email);
+    
+    boolean blockUser(Long id);
+    boolean unblockUser(Long id);
 } 

@@ -20,4 +20,5 @@ public interface DeliveryService {
     AdminStatisticsDTO getAdminStatistics();
     List<Delivery> getRecentDeliveries();
     List<Delivery> getDeliveriesByUser(Long id);
+    Delivery getDeliveryById(Long id);
 } 

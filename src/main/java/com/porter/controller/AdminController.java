@@ -5,9 +5,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,8 +29,10 @@ import com.porter.model.User;
 import com.porter.repository.PorterRepository;
 import com.porter.repository.UserRepository;
 import com.porter.service.DeliveryService;
+import com.porter.service.PaymentService;
 import com.porter.service.UserService;
 
+@CrossOrigin(origins = "${FRONTEND_URL}")
 @RestController
 @RequestMapping("/api/admin")
 @PreAuthorize("hasRole('ADMIN')")
@@ -45,6 +49,11 @@ public class AdminController {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private PaymentService paymentService;
+
+    @Value("${FRONTEND_URL}")
+    private String frontendUrl;
 
     // User Management
     @GetMapping("/users")
@@ -76,6 +85,78 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
+    private void sendBlockUnblockEmail(String email, String name, String role, boolean blocked) {
+        String status = blocked ? "Blocked" : "Unblocked";
+        String statusColor = blocked ? "#dc3545" : "#28a745";
+        String iconUrl = blocked ? "https://img.icons8.com/emoji/48/no-entry.png" : "https://img.icons8.com/emoji/48/check-mark-emoji.png";
+        String subject;
+        if ("PORTER".equals(role)) {
+            subject = "Porter Account " + status + " Notification";
+        } else {
+            subject = "Account " + status + " Notification";
+        }
+        String mainText;
+        if (blocked) {
+            mainText = ("PORTER".equals(role))
+                ? "Your porter account has been <span style='color: " + statusColor + ";'><strong>blocked</strong></span> by the admin. You will not be able to access your account until it is unblocked."
+                : "Your account has been <span style='color: " + statusColor + ";'><strong>blocked</strong></span> by the admin. You will not be able to access your account until it is unblocked.";
+        } else {
+            mainText = ("PORTER".equals(role))
+                ? "Your porter account has been <span style='color: " + statusColor + ";'><strong>unblocked</strong></span> by the admin. You can now log in and use your account as usual."
+                : "Your account has been <span style='color: " + statusColor + ";'><strong>unblocked</strong></span> by the admin. You can now log in and use your account as usual.";
+        }
+        String content = String.format(
+            "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; background-color: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);'>"
+            + "<div style='text-align: center;'>"
+            + "<img src='%s' alt='%s' width='50' height='50' />"
+            + "<h2 style='color: %s; margin-bottom: 10px;'>%s Account %s</h2>"
+            + "</div>"
+            + "<p style='font-size: 16px; color: #333;'>Dear <strong>%s</strong>,</p>"
+            + "<p style='font-size: 15px; color: #555;'>%s</p>"
+            + "<p style='font-size: 14px; color: #666;'>If you have any questions, please contact support.</p>"
+            + "<p style='font-size: 14px; color: #333; margin-top: 30px;'>Best regards,<br><strong>Porter Team</strong></p>"
+            + "</div>",
+            iconUrl, status, statusColor, ("PORTER".equals(role) ? "Porter" : "User"), status, name, mainText
+        );
+        emailService.sendEmail(email, subject, content);
+    }
+
+    @PutMapping("/users/{id}/block")
+    public ResponseEntity<?> blockUser(@PathVariable Long id) {
+        boolean result = userService.blockUser(id);
+        if (result) {
+            userRepository.findById(id).ifPresent(user -> {
+                sendBlockUnblockEmail(user.getEmail(), user.getUsername(), user.getRole().name(), true);
+                if ("PORTER".equals(user.getRole().name())) {
+                    porterRepository.findByEmail(user.getEmail()).ifPresent(porter -> {
+                        sendBlockUnblockEmail(porter.getEmail(), porter.getName(), "PORTER", true);
+                    });
+                }
+            });
+            return ResponseEntity.ok(Map.of("message", "User blocked successfully"));
+        } else {
+            return ResponseEntity.status(404).body(Map.of("message", "User not found"));
+        }
+    }
+
+    @PutMapping("/users/{id}/unblock")
+    public ResponseEntity<?> unblockUser(@PathVariable Long id) {
+        boolean result = userService.unblockUser(id);
+        if (result) {
+            userRepository.findById(id).ifPresent(user -> {
+                sendBlockUnblockEmail(user.getEmail(), user.getUsername(), user.getRole().name(), false);
+                if ("PORTER".equals(user.getRole().name())) {
+                    porterRepository.findByEmail(user.getEmail()).ifPresent(porter -> {
+                        sendBlockUnblockEmail(porter.getEmail(), porter.getName(), "PORTER", false);
+                    });
+                }
+            });
+            return ResponseEntity.ok(Map.of("message", "User unblocked successfully"));
+        } else {
+            return ResponseEntity.status(404).body(Map.of("message", "User not found"));
+        }
+    }
+
     // Delivery Management
     @GetMapping("/deliveries")
     public ResponseEntity<List<DeliveryDTO>> getAllDeliveries() {
@@ -93,7 +174,11 @@ public class AdminController {
 
     @DeleteMapping("/deliveries/{id}")
     public ResponseEntity<Void> deleteDelivery(@PathVariable Long id) {
-        deliveryService.deleteDeliveryByAdmin(id);
+        Delivery delivery = deliveryService.getDeliveryById(id);
+        if(delivery != null){
+            paymentService.deletePaymentByDeliveryId(id);
+            deliveryService.deleteDelivery(id, delivery.getUser().getUsername());
+        }
         return ResponseEntity.ok().build();
     }
 
@@ -149,7 +234,7 @@ public class AdminController {
                                                     </p>
 
                                                    <div style="text-align: center; margin: 30px 0;">
-                            <a href="http://localhost:3000/login"
+                            <a href="%s/login"
                                style="background-color: #007bff; color: white; padding: 14px 28px; text-decoration: none; font-size: 16px; font-weight: bold; border-radius: 8px; display: inline-block;">
                                 <img src="https://img.icons8.com/ios-filled/20/ffffff/key.png"
                                      alt="Key Icon"
@@ -169,7 +254,7 @@ public class AdminController {
                                                     </p>
                                                 </div>
                                                 """,
-                porter.getName());
+                porter.getName(), frontendUrl);
 
         emailService.sendEmail(porter.getEmail(), subject, content);
         return ResponseEntity.ok().body("Porter approved successfully");

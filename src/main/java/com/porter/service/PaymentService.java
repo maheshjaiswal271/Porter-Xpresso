@@ -21,6 +21,8 @@ import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
 import com.razorpay.Utils;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class PaymentService {
 
@@ -85,7 +87,6 @@ public class PaymentService {
         Payment payment = null;
         Delivery delivery = null;
         try {
-            // Verify the payment signature
             JSONObject attributes = new JSONObject();
             attributes.put("razorpay_payment_id", razorpayPaymentId);
             attributes.put("razorpay_order_id", razorpayOrderId);
@@ -93,7 +94,6 @@ public class PaymentService {
 
             Utils.verifyPaymentSignature(attributes, razorpayKeyId);
 
-            // Update payment status
             payment = paymentRepository.findByPaymentId(razorpayOrderId)
                     .orElseThrow(() -> new RuntimeException("Payment not found"));
 
@@ -128,5 +128,14 @@ public class PaymentService {
             }
             throw new RuntimeException("Error verifying payment: " + e.getMessage());
         }
+    }
+
+    public Payment findByPaymentId(String paymentId) {
+        return paymentRepository.findByPaymentIdWithDeliveryAndUser(paymentId).orElse(null);
+    }
+
+    @Transactional  
+    public void deletePaymentByDeliveryId(Long deliveryId){
+        paymentRepository.deletePaymentByDeliveryId(deliveryId);
     }
 }

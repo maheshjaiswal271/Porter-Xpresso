@@ -25,6 +25,7 @@ import com.porter.repository.PaymentRepository;
 import com.porter.repository.PorterRepository;
 import com.porter.repository.UserRepository;
 import com.porter.service.DeliveryService;
+import com.porter.service.WebSocketService;
 
 @Service
 public class DeliveryServiceImpl implements DeliveryService {
@@ -41,6 +42,9 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Autowired
     private PorterRepository porterRepository;
+
+    @Autowired
+    private WebSocketService webSocketService;
 
     @Override
     @Transactional
@@ -62,7 +66,9 @@ public class DeliveryServiceImpl implements DeliveryService {
             delivery.setAmount(delivery.getDeliveryFee());
         }
         
-        return deliveryRepository.save(delivery);
+        Delivery savedDelivery = deliveryRepository.save(delivery);
+        webSocketService.sendDeliveryUpdate(savedDelivery);
+        return savedDelivery;
     }
 
     @Override
@@ -88,6 +94,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public Delivery getDeliveryById(Long id) {
         Delivery delivery = deliveryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Delivery not found"));
@@ -109,7 +116,9 @@ public class DeliveryServiceImpl implements DeliveryService {
             delivery.setUpdatedAt(LocalDateTime.now());
             
             logger.info("Cancelling delivery with ID: {}", id);
-            return deliveryRepository.save(delivery);
+            Delivery savedDelivery = deliveryRepository.save(delivery);
+            webSocketService.sendDeliveryUpdate(savedDelivery);
+            return savedDelivery;
         } catch (IllegalStateException e) {
             logger.error("Error cancelling delivery {}: {}", id, e.getMessage());
             throw new RuntimeException("Failed to cancel delivery: " + e.getMessage());
@@ -121,12 +130,11 @@ public class DeliveryServiceImpl implements DeliveryService {
     public Delivery updatePaymentStatus(Long id, String paymentId, String username) {
         Delivery delivery = getDelivery(id, username);
         
-        // Update delivery status to indicate payment is completed
-        //delivery.setStatus(DeliveryStatus.ACCEPTED);
         delivery.setUpdatedAt(LocalDateTime.now());
         
-        //logger.info("Updating payment status for delivery with ID: {} with payment ID: {}", id, paymentId);
-        return deliveryRepository.save(delivery);
+        Delivery savedDelivery = deliveryRepository.save(delivery);
+        // webSocketService.sendDeliveryUpdate(savedDelivery);
+        return savedDelivery;
     }
 
     @Override
@@ -223,7 +231,9 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public Delivery updateDelivery(Delivery delivery) {
-        return deliveryRepository.save(delivery);
+        Delivery savedDelivery = deliveryRepository.save(delivery);
+        webSocketService.sendDeliveryUpdate(savedDelivery);
+        return savedDelivery;
     }
 
     @Override

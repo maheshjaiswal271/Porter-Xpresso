@@ -1,73 +1,134 @@
-# 𝑃𝑜𝑟𝑡𝑒𝑟𝑊𝑎𝑎𝑙𝑒 Application
+# Porter Delivery Platform
 
-A comprehensive delivery management system with real-time tracking and multi-role support.
+A full-stack delivery management platform for booking, tracking, and managing deliveries, with real-time updates and role-based dashboards for users, porters, and admins.
 
-## Features
+---
 
-- **Multi-role Authentication**
-  - Admin: Manage users, porters, and system settings
-  - Users: Place delivery requests and track shipments
-  - Porter: Accept deliveries and manage deliveries in progress
+## 🚀 Features
+- User registration, login, and OTP authentication
+- Book and track deliveries in real-time
+- Porter dashboard for managing assigned tasks
+- Admin dashboard for managing users and deliveries
+- Payment integration (Razorpay)
+- Email notifications
+- WebSocket-based real-time updates
+- Role-based access control
 
-- **Real-time Tracking**
-  - Live location tracking using Google Maps API
-  - Shortest path calculation
-  - Estimated time of arrival
+---
 
-- **Payment System**
-  - Distance-based pricing
-  - Secure payment processing
-  - Transaction history
+## 🛠️ Tech Stack
+- **Backend:** Java, Spring Boot, Spring Security, JPA/Hibernate
+- **Frontend:** React (Vite), JavaScript, CSS
+- **Database:** SQL Server (Configure via environment variables)
+- **Payments:** Razorpay
+- **WebSockets:** Spring WebSocket, custom service
 
-- **Responsive Design**
-  - Works on desktop and mobile devices
-  - Progressive Web App (PWA) support
+---
 
-## Tech Stack
+## 📁 Folder Structure
+```
+Porter/
+├── porter-delivery-frontend/   # React frontend (Vite)
+│   └── src/
+│       ├── components/         # Reusable UI components
+│       ├── contexts/           # React context providers
+│       ├── pages/              # Page-level components
+│       ├── services/           # API and WebSocket services
+│       └── ...
+├── src/main/java/com/porter/   # Spring Boot backend
+│   ├── config/                 # Configuration classes
+│   ├── controller/             # REST controllers
+│   ├── DTO/                    # Data Transfer Objects
+│   ├── Email/                  # Email service
+│   ├── exception/              # Exception handling
+│   ├── model/                  # JPA entities
+│   ├── repository/             # Spring Data repositories
+│   ├── security/               # Security config & JWT
+│   ├── service/                # Service interfaces & impl
+│   └── ...
+└── src/main/resources/         # Application properties, static files
+```
 
-### Frontend
-- React.js
-- TypeScript
-- Material-UI
-- Redux Toolkit
-- React Router
-- Google Maps JavaScript API
-- Socket.io-client
+---
 
-### Backend
-- Spring Boot
-- Spring Security
-- SQL Server
-- WebSocket
-- JWT Authentication
-- Google Maps Services API
+## ⚙️ Environment Variables Setup
 
-## Prerequisites
+The application uses environment variables for configuration. Create a `.env` file in the `src/` directory:
 
-- Node.js (v18 or higher)
-- Java 17 or higher
-- SQL Server Express or higher
-- Google Maps API Key
-- Maven
+```env
+# Server
+SERVER_PORT=8080
 
-## Setup Instructions
+# Database 
+DB_URL=jdbc:sqlserver://your-server:1433;databaseName=db_porter;encrypt=true;trustServerCertificate=true
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
 
-1. Clone the repository
-2. Set up environment variables
-3. Install dependencies
-4. Set up SQL Server database
-5. Run the application
+# JWT
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRATION=86400000
 
-### Database Setup
+# Email
+MAIL_USERNAME=your_email@gmail.com
+MAIL_PASSWORD=your_app_password
+
+# Razorpay
+RAZORPAY_KEY_ID=your_razorpay_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_secret
+RAZORPAY_CURRENCY=INR
+RAZORPAY_COMPANY_NAME=PORTER XPRESSO
+
+# Frontend Url
+FRONTEND_URL=http://localhost:3000
+```
+
+---
+
+## ⚙️ Setup Instructions
+
+### 1. Backend (Spring Boot)
+1. **Configure Environment Variables:**
+   - Create `.env` file in `src/` directory with your configuration
+   - Or set environment variables directly
+2. **Build & Run:**
+   - Using Maven:
+     ```sh
+     ./mvnw spring-boot:run
+     ```
+   - Or import into your IDE and run `PorterApplication.java`.
+
+### 2. Frontend (React)
+1. **Install dependencies:**
+   ```sh
+   cd porter-delivery-frontend
+   npm install
+   ```
+2. **Run the app:**
+   ```sh
+   npm run dev
+   ```
+3. **Configure API endpoints:**
+   - Update API URLs in `porter-delivery-frontend/src/services/` as needed.
+
+---
+
+## 🚀 Deployment
+
+For deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md)
+
+### Quick Deploy to Render:
+1. **Backend:** Create a Web Service with Java 17
+2. **Frontend:** Create a Static Site
+3. **Set Environment Variables** as specified in the deployment guide
+
+---
+
+## 🗄️ SQL Server: Create Tables
+
+Below are example SQL Server queries to create the main tables required for the backend. Adjust field types and constraints as needed for your environment.
+
 ```sql
--- Create Database
-CREATE DATABASE db_porter;
-GO
-
-USE db_porter;
-GO
-
--- Create Users table
+-- Users table
 CREATE TABLE users (
     id BIGINT IDENTITY(1,1) PRIMARY KEY,
     username NVARCHAR(50) UNIQUE NOT NULL,
@@ -78,7 +139,7 @@ CREATE TABLE users (
     updated_at DATETIME2 DEFAULT GETDATE()
 );
 
--- Create Deliveries table
+-- Deliveries table
 CREATE TABLE deliveries (
     id BIGINT IDENTITY(1,1) PRIMARY KEY,
     user_id BIGINT,
@@ -98,7 +159,7 @@ CREATE TABLE deliveries (
     FOREIGN KEY (porter_id) REFERENCES users(id)
 );
 
--- Create Tracking table
+-- Tracking table
 CREATE TABLE tracking (
     id BIGINT IDENTITY(1,1) PRIMARY KEY,
     delivery_id BIGINT,
@@ -108,7 +169,7 @@ CREATE TABLE tracking (
     FOREIGN KEY (delivery_id) REFERENCES deliveries(id)
 );
 
--- Create Payments table
+-- Payments table
 CREATE TABLE payments (
     id BIGINT IDENTITY(1,1) PRIMARY KEY,
     delivery_id BIGINT,
@@ -121,40 +182,33 @@ CREATE TABLE payments (
 );
 ```
 
-### Frontend Setup
-```bash
-cd porter-delivery-frontend
-npm install
-npm start
-```
+---
 
-### Backend Setup
-```bash
-./mvnw spring-boot:run
-```
+## 🧑‍💻 Usage
+- Access the frontend at [http://localhost:5173](http://localhost:5173) (default Vite port)
+- Backend runs at [http://localhost:8080](http://localhost:8080) (default Spring Boot port)
+- Register as a user, book deliveries, or log in as porter/admin for respective dashboards.
 
-## Environment Variables
+---
 
-Create a `.env` file in the frontend directory with:
+## 🤝 Contributing
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/YourFeature`)
+3. Commit your changes (`git commit -am 'Add new feature'`)
+4. Push to the branch (`git push origin feature/YourFeature`)
+5. Open a Pull Request
 
-```
-REACT_APP_GOOGLE_MAPS_API_KEY=your_api_key
-REACT_APP_API_URL=http://localhost:8080
-```
+---
 
-The backend configuration is already set in `application.properties` with SQL Server connection details:
+## 📄 License
+[MIT](LICENSE) *(or specify your license here)*
 
-```properties
-spring.datasource.url=jdbc:sqlserver://DESKTOP-PS5HGFA\\SQLEXPRESS;databaseName=db_porter;encrypt=true;trustServerCertificate=true
-spring.datasource.username=sa
-spring.datasource.password=dims123
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.SQLServerDialect
-```
+---
 
-## API Documentation
+## 📬 Contact
+- **Author:** [Your Name](mailto:your.email@example.com)
+- **Project Link:** [GitHub Repository](https://github.com/yourusername/porter)
 
-API documentation is available at `/swagger-ui.html` when running the backend server.
+---
 
-## License
-
-MIT 
+*Feel free to update this README with more details as your project evolves!* 

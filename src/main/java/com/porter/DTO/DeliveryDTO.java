@@ -18,7 +18,6 @@ public class DeliveryDTO {
     private PackageType packageType;
     private Double packageWeight;
     private String description;
-    private String specialInstructions;
     private BigDecimal deliveryFee;
     private BigDecimal amount;
     private Double distance;
@@ -42,7 +41,6 @@ public class DeliveryDTO {
         this.packageType = builder.packageType;
         this.packageWeight = builder.packageWeight;
         this.description = builder.description;
-        this.specialInstructions = builder.specialInstructions;
         this.deliveryFee = builder.deliveryFee;
         this.amount = builder.amount;
         this.distance = builder.distance;
@@ -125,14 +123,6 @@ public class DeliveryDTO {
         this.description = description;
     }
 
-    public String getSpecialInstructions() {
-        return specialInstructions;
-    }
-
-    public void setSpecialInstructions(String specialInstructions) {
-        this.specialInstructions = specialInstructions;
-    }
-
     public BigDecimal getDeliveryFee() {
         return deliveryFee;
     }
@@ -200,7 +190,6 @@ public class DeliveryDTO {
         private PackageType packageType;
         private Double packageWeight;
         private String description;
-        private String specialInstructions;
         private BigDecimal deliveryFee;
         private BigDecimal amount;
         private Double distance;
@@ -251,11 +240,6 @@ public class DeliveryDTO {
 
         public Builder description(String description) {
             this.description = description;
-            return this;
-        }
-
-        public Builder specialInstructions(String specialInstructions) {
-            this.specialInstructions = specialInstructions;
             return this;
         }
 
@@ -317,7 +301,6 @@ public class DeliveryDTO {
                 ", packageType=" + packageType +
                 ", packageWeight=" + packageWeight +
                 ", description='" + description + '\'' +
-                ", specialInstructions='" + specialInstructions + '\'' +
                 ", deliveryFee=" + deliveryFee +
                 ", amount=" + amount +
                 ", distance=" + distance +
@@ -339,7 +322,6 @@ public class DeliveryDTO {
                 .packageType(delivery.getPackageType())
                 .packageWeight(delivery.getPackageWeight())
                 .description(delivery.getDescription())
-                .specialInstructions(delivery.getSpecialInstructions())
                 .deliveryFee(delivery.getDeliveryFee())
                 .amount(delivery.getAmount())
                 .distance(delivery.getDistance())

@@ -72,9 +72,6 @@ public class Delivery {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "special_instructions")
-    private String specialInstructions;
-
     @Column(name = "delivery_fee", nullable = false)
     private BigDecimal deliveryFee;
 
@@ -83,6 +80,9 @@ public class Delivery {
 
     @Column(name = "distance")
     private Double distance;
+
+    @Column(name = "rating")
+    private Double rating;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -170,14 +170,6 @@ public class Delivery {
         this.description = description;
     }
 
-    public String getSpecialInstructions() {
-        return specialInstructions;
-    }
-
-    public void setSpecialInstructions(String specialInstructions) {
-        this.specialInstructions = specialInstructions;
-    }
-
     public BigDecimal getDeliveryFee() {
         return deliveryFee;
     }
@@ -200,6 +192,13 @@ public class Delivery {
 
     public void setDistance(Double distance) {
         this.distance = distance;
+    }
+
+    public Double getRating() {
+        return rating;
+    }
+    public void setRating(Double rating) {
+        this.rating = rating;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -257,10 +256,10 @@ public class Delivery {
                 ", packageType=" + packageType +
                 ", packageWeight=" + packageWeight +
                 ", description='" + description + '\'' +
-                ", specialInstructions='" + specialInstructions + '\'' +
                 ", deliveryFee=" + deliveryFee +
                 ", amount=" + amount +
                 ", distance=" + distance +
+                ", rating=" + rating +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", scheduledTime=" + scheduledTime +

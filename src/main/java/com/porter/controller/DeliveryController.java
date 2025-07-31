@@ -26,10 +26,11 @@ import com.porter.DTO.DeliveryDTO;
 import com.porter.model.Delivery;
 import com.porter.model.Tracking;
 import com.porter.model.enums.DeliveryStatus;
+import com.porter.service.PorterService;
 import com.porter.service.TrackingService;
 import com.porter.service.impl.DeliveryServiceImpl;
 
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "${FRONTEND_URL}")
 @RestController
 @RequestMapping("/api/deliveries")
 public class DeliveryController {
@@ -41,10 +42,18 @@ public class DeliveryController {
     @Autowired
     private TrackingService trackingService;
 
+    @Autowired
+    private com.porter.Email.EmailService emailService;
+
+    @Autowired
+    private PorterService porterService;
+
     @PostMapping("/delivery")
     public ResponseEntity<DeliveryDTO> createDelivery(@RequestBody Delivery delivery, Authentication authentication) {
         String username = authentication.getName();
         Delivery createdDelivery = deliveryService.createDelivery(delivery, username);
+        // Send confirmation email
+        emailService.sendDeliveryBookedEmail(createdDelivery);
         return ResponseEntity.ok(DeliveryDTO.fromEntity(createdDelivery));
     }
 
@@ -162,11 +171,24 @@ public class DeliveryController {
             tracking.setLatitude(request.getLatitude());
             tracking.setLongitude(request.getLongitude());
             trackingService.addTracking(tracking);
+            emailService.sendDeliveryStatusEmail(delivery, delivery.getStatus().name());
+            if (delivery.getStatus() == DeliveryStatus.DELIVERED &&
+                delivery.getPaymentStatus() != com.porter.model.PaymentStatus.COMPLETED) {
+                emailService.sendUnpaidBillEmail(delivery, delivery.getAmount() != null ? delivery.getAmount().toString() : "");
+            }
             return ResponseEntity.ok(DeliveryDTO.fromEntity(delivery));
         } catch (Exception ex) {
             return ResponseEntity.badRequest()
                     .body(Map.of("message", ex.getMessage()));
         }
+    }
+
+    @PostMapping("/rate-porter")
+    public ResponseEntity<?> ratePorter(@RequestBody Map<String, Object> payload) {
+        Long porterId = ((Number) payload.get("porterId")).longValue();
+        Double rating = ((Number) payload.get("rating")).doubleValue();
+        porterService.ratePorter(porterId, rating);
+        return ResponseEntity.ok(Map.of("message", "Rating submitted successfully"));
     }
 
    public static class StatusUpdateRequest {

@@ -18,6 +18,7 @@ import com.porter.model.enums.DeliveryStatus;
 import com.porter.repository.DeliveryRepository;
 import com.porter.repository.PorterRepository;
 import com.porter.service.PorterService;
+import com.porter.service.WebSocketService;
 
 @Service
 public class PorterServiceImpl implements PorterService {
@@ -27,6 +28,9 @@ public class PorterServiceImpl implements PorterService {
 
     @Autowired
     private PorterRepository porterRepository;
+
+    @Autowired
+    private WebSocketService webSocketService;
 
     @Override
     @Transactional(readOnly = true)
@@ -55,6 +59,7 @@ public class PorterServiceImpl implements PorterService {
         delivery.setUpdatedAt(LocalDateTime.now());
 
         Delivery savedDelivery = deliveryRepository.save(delivery);
+        webSocketService.sendDeliveryUpdate(savedDelivery);
         return DeliveryDTO.fromEntity(savedDelivery);
     }
 
@@ -77,6 +82,7 @@ public class PorterServiceImpl implements PorterService {
         delivery.setUpdatedAt(LocalDateTime.now());
 
         Delivery savedDelivery = deliveryRepository.save(delivery);
+        webSocketService.sendDeliveryUpdate(savedDelivery);
         return DeliveryDTO.fromEntity(savedDelivery);
     }
 
@@ -190,6 +196,15 @@ public class PorterServiceImpl implements PorterService {
             "pendingDeliveries", pendingDeliveries,
             "packageTypeDistribution", packageTypeDistribution
         );
+    }
+
+    @Override
+    @Transactional
+    public void ratePorter(Long porterId, double rating) {
+        Porter porter = porterRepository.findById(porterId)
+                .orElseThrow(() -> new RuntimeException("Porter not found"));
+        porter.setRating(rating); // Overwrite for now; can be changed to average later
+        porterRepository.save(porter);
     }
 
     private void validateStatusTransition(DeliveryStatus currentStatus, DeliveryStatus newStatus) {
