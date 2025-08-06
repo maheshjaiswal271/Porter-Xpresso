@@ -150,7 +150,7 @@ const AdminDeliveries = () => {
           <IconButton onClick={() => handleEdit(params.row)}><EditIcon /></IconButton>
           <IconButton onClick={() => handleDelete(params.row)} color="error"><DeleteIcon /></IconButton>
           {/* Order Tracking button */}
-          <IconButton onClick={() => window.open(`/track/${params.row.id}`, '_blank')} color="info" title="Track Order">
+          <IconButton onClick={() => window.open(`/#/track/${params.row.id}`, '_blank')} color="info" title="Track Order">
             <LocationSearchingIcon />
           </IconButton>
         </>
@@ -214,7 +214,7 @@ const AdminDeliveries = () => {
                 variant="outlined"
                 color="info"
                 sx={{ mt: 2 }}
-                onClick={() => window.open(`/track/${viewDelivery.id}`, '_blank')}
+                onClick={() => window.open(`/#/track/${viewDelivery.id}`, '_blank')}
                 startIcon={<LocationSearchingIcon />}
               >
                 Track Order
