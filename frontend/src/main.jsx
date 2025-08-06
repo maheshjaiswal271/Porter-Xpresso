@@ -4,7 +4,7 @@ import App from './App';
 import axios from 'axios';
 
 // Configure axios defaults
-axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+axios.defaults.baseURL = import.meta.env.VITE_REACT_APP_BACKEND_API || 'http://localhost:8080/api';
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 
 // Add request interceptor for debugging

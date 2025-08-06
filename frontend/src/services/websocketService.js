@@ -14,8 +14,13 @@ export function connectWebSocket(onDeliveryMessage, onUserMessage, onPorterMessa
   messageHandlers.porters = onPorterMessage;
   messageHandlers.admin = onAdminMessage;
 
+  // Use environment variable for WebSocket URL, fallback to localhost for development
+  const wsUrl = import.meta.env.VITE_REACT_APP_BACKEND_API 
+    ? import.meta.env.VITE_REACT_APP_BACKEND_API.replace('https://', 'wss://').replace('http://', 'ws://').replace('/api', '/ws/websocket')
+    : 'ws://localhost:8080/ws/websocket';
+
   stompClient = new Client({
-    webSocketFactory: () => new WebSocket('ws://localhost:8080/ws/websocket'),
+    webSocketFactory: () => new WebSocket(wsUrl),
     reconnectDelay: 5000,
     heartbeatIncoming: 4000,
     heartbeatOutgoing: 4000,

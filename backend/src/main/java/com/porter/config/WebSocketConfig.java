@@ -22,6 +22,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").setAllowedOrigins(frontendUrl).withSockJS();
+        registry.addEndpoint("/ws")
+                .setAllowedOrigins(frontendUrl, "https://porter-xpresso-f.onrender.com", "http://localhost:3000")
+                .withSockJS();
     }
 } 
