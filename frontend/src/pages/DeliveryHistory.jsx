@@ -394,7 +394,7 @@ const DeliveryHistory = () => {
                         <IconButton
                           size="small"
                           color="info"
-                          onClick={() => window.open(`${window.location.origin}/track/${delivery.id}`, '_blank')}
+                          onClick={() => window.open(`${window.location.origin}/#/track/${delivery.id}`, '_blank')}
                           title="Track Order"
                         >
                           <LocationSearchingIcon />
