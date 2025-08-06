@@ -4,5 +4,15 @@
       "source": "/(.*)",
       "destination": "/index.html"
     }
+  ],
+  "routes": [
+    {
+      "src": "/track/(.*)",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
   ]
 } 
