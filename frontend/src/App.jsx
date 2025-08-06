@@ -1,5 +1,5 @@
 import React, { useEffect, createContext, useState } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material';
 import { AuthProvider, useAuth, handleWebSocketUserUpdate } from './contexts/AuthContext';
 import Layout from './components/Layout';
