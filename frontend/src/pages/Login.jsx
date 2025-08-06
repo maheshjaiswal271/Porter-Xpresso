@@ -56,13 +56,13 @@ const Login = () => {
         // Redirect based on role
         switch (role) {
           case 'ADMIN':
-            navigate('/#/admin', { replace: true });
+            navigate('/admin', { replace: true });
             break;
           case 'PORTER':
-            navigate('/#/porter', { replace: true });
+            navigate('/porter', { replace: true });
             break;
           case 'USER':
-            navigate('/#/user', { replace: true });
+            navigate('/user', { replace: true });
             break;
           default:
             // If role is invalid, clear storage
@@ -134,13 +134,13 @@ const Login = () => {
           const role = response.role?.toUpperCase();
           switch (role) {
             case 'ADMIN':
-              navigate('/#/admin', { replace: true });
+              navigate('/admin', { replace: true });
               break;
             case 'PORTER':
-              navigate('/#/porter', { replace: true });
+              navigate('/porter', { replace: true });
               break;
             case 'USER':
-              navigate('/#/user', { replace: true });
+              navigate('/user', { replace: true });
               break;
             default:
               toast.error('Invalid user role');

@@ -122,7 +122,7 @@ export const AuthProvider = ({ children }) => {
       // If the update is for the current user and they are blocked, logout
       if (userData.id === currentUser.id && userData.blocked) {
         logout();
-        window.location.href = '/#/login';
+        window.location.href = '/login';
       }
     }
   };

@@ -66,29 +66,29 @@ const Layout = ({ children }) => {
 
   const getMenuItems = (role) => {
     const baseItems = [
-      { text: 'Profile', icon: <PersonIcon />, path: '/#/profile' }
+      { text: 'Profile', icon: <PersonIcon />, path: '/profile' }
     ];
 
     switch (role) {
       case 'ADMIN':
         return [
-          { text: 'Dashboard', icon: <DashboardIcon />, path: '/#/admin' },
-          { text: 'Manage Users', icon: <AdminIcon />, path: '/#/admin/users' },
-          { text: 'All Deliveries', icon: <LocalShippingIcon />, path: '/#/admin/deliveries' },
+          { text: 'Dashboard', icon: <DashboardIcon />, path: '/admin' },
+          { text: 'Manage Users', icon: <AdminIcon />, path: '/admin/users' },
+          { text: 'All Deliveries', icon: <LocalShippingIcon />, path: '/admin/deliveries' },
           ...baseItems
         ];
       case 'PORTER':
         return [
-          { text: 'Dashboard', icon: <DashboardIcon />, path: '/#/porter' },
-          { text: 'My Tasks', icon: <TaskIcon />, path: '/#/porter/tasks' },
-          { text: 'Delivery History', icon: <HistoryIcon />, path: '/#/porter/history' },
+          { text: 'Dashboard', icon: <DashboardIcon />, path: '/porter' },
+          { text: 'My Tasks', icon: <TaskIcon />, path: '/porter/tasks' },
+          { text: 'Delivery History', icon: <HistoryIcon />, path: '/porter/history' },
           ...baseItems
         ];
       case 'USER':
         return [
-          { text: 'Dashboard', icon: <DashboardIcon />, path: '/#/user' },
-          { text: 'Book Delivery', icon: <LocalShippingIcon />, path: '/#/BookDelivery' },
-          { text: 'Delivery History', icon: <HistoryIcon />, path: '/#/history' },
+          { text: 'Dashboard', icon: <DashboardIcon />, path: '/user' },
+          { text: 'Book Delivery', icon: <LocalShippingIcon />, path: '/BookDelivery' },
+          { text: 'Delivery History', icon: <HistoryIcon />, path: '/history' },
           ...baseItems
         ];
       default:
@@ -99,9 +99,7 @@ const Layout = ({ children }) => {
   const menuItems = getMenuItems(user?.role);
 
   const handleNavigation = (path) => {
-    // Remove the /#/ prefix since navigate will handle it
-    const cleanPath = path.replace('/#/', '/');
-    navigate(cleanPath);
+    navigate(path);
     if (isMobile) {
       setMobileOpen(false);
     }
@@ -109,7 +107,7 @@ const Layout = ({ children }) => {
 
   const handleLogout = () => {
     logout();
-    navigate('/#/');
+    navigate('/');
   };
 
   const drawer = (
@@ -134,7 +132,7 @@ const Layout = ({ children }) => {
             button
             key={item.text}
             onClick={() => handleNavigation(item.path)}
-            selected={location.pathname === item.path.replace('/#/', '/')}
+            selected={location.pathname === item.path}
           >
             <ListItemIcon>{item.icon}</ListItemIcon>
             <ListItemText primary={item.text} />
