@@ -21,44 +21,7 @@ export const AuthProvider = ({ children }) => {
     } else {
       setLoading(false);
     }
-
-    // Set up periodic check for user status (every 10 seconds)
-    const interval = setInterval(async () => {
-      const currentToken = localStorage.getItem('token');
-      if (currentToken && user) {
-        try {
-          const response = await axios.get(`${API}/auth/profile`, {
-            headers: {
-              Authorization: `Bearer ${currentToken}`
-            }
-          });
-          const userData = response.data;
-          
-          // Check if user is blocked
-          if (userData.blocked) {
-            logout();
-            // Show notification to user
-            if (typeof window !== 'undefined') {
-              alert('Your account has been blocked by admin. You have been logged out.');
-            }
-            window.location.href = '/login';
-          } else {
-            // Update user data if not blocked
-            setUser(userData);
-            localStorage.setItem('user', JSON.stringify(userData));
-          }
-        } catch (error) {
-          // If token is invalid, logout
-          if (error.response?.status === 401) {
-            logout();
-            window.location.href = '/login';
-          }
-        }
-      }
-    }, 10000); // Check every 10 seconds
-
-    return () => clearInterval(interval);
-  }, [user]);
+  }, []);
 
   const fetchProfile = async () => {
     try {
@@ -69,17 +32,6 @@ export const AuthProvider = ({ children }) => {
         }
       });
       const userData = response.data;
-      
-      // Check if user is blocked
-      if (userData.blocked) {
-        logout();
-        if (typeof window !== 'undefined') {
-          alert('Your account has been blocked by admin. You have been logged out.');
-        }
-        window.location.href = '/login';
-        return;
-      }
-      
       setUser(userData);
       localStorage.setItem('user', JSON.stringify(userData));
     } catch (error) {
@@ -170,10 +122,6 @@ export const AuthProvider = ({ children }) => {
       // If the update is for the current user and they are blocked, logout
       if (userData.id === currentUser.id && userData.blocked) {
         logout();
-        // Show notification to user
-        if (typeof window !== 'undefined') {
-          alert('Your account has been blocked by admin. You have been logged out.');
-        }
         window.location.href = '/login';
       }
     }
