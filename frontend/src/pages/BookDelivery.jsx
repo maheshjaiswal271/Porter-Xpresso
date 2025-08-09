@@ -215,7 +215,7 @@ const BookDelivery = () => {
       toast.success('Delivery booked successfully!');
       navigate('/history');
     } catch (error) {
-      toast.error('Failed to update payment status. Please contact support.');
+      //toast.error('Failed to update payment status. Please contact support.');
     }
   };
 
